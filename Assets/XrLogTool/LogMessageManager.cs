@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LogMessageManager : MonoBehaviour
 {
+    [SerializeField] private string screeningText = "";
+
+
     [SerializeField, Tooltip("デバッグログ用テキストオブジェクト")]
     private GameObject p_TargetDebugPanelObject;
     private TextMesh p_Text;
@@ -12,16 +16,16 @@ public class LogMessageManager : MonoBehaviour
 
     [SerializeField]
     private int p_LineNum = 20;
-    
+
     [SerializeField]
     private int p_letterNum = 100;
-    
+
 
     private string p_TextMessage;
     string newline;
 
-    
-    
+
+
     private void Awake()
     {
         // Logメッセージイベント追加
@@ -29,7 +33,7 @@ public class LogMessageManager : MonoBehaviour
     }
 
     private void Start()
-    {
+    {//こいつをAwakeでかくとインスペクターでオフにできなくなってしまうのでStartで書いておく
         newline = System.Environment.NewLine;
         p_Text = p_TargetDebugPanelObject.GetComponent<TextMesh>();
     }
@@ -40,6 +44,16 @@ public class LogMessageManager : MonoBehaviour
         if (p_Text != null)
         {
             string textmessage = p_Text.text;
+
+            //スクリーニングテキストになにか指定があれば、それを含まないときは表示しない
+            if (!string.IsNullOrEmpty(screeningText))
+            {
+                if (!condition.Contains(screeningText))
+                {
+                    return;
+                }
+            }
+
             textmessage = condition + newline + textmessage;
             if (doesStacktraceInclude)
             {
@@ -62,8 +76,8 @@ public class LogMessageManager : MonoBehaviour
             }
             p_Text.text = textmessage;
         }
-       
-        
+
+
     }
 
 
